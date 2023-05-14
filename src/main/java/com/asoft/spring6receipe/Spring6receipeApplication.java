@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Spring6receipeApplication {
 
 	public static void main(String[] args) {
-		System.out.println(">>>>>>>>>>> Hi spring , hello ");
 		SpringApplication.run(Spring6receipeApplication.class, args);
 	}
 
