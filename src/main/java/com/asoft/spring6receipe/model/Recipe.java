@@ -1,5 +1,6 @@
 package com.asoft.spring6receipe.model;
 
+import com.asoft.spring6receipe.enumeration.Difficulty;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -27,6 +28,9 @@ public class Recipe {
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "recipe")
     private Set<Ingredient> ingredient=new HashSet<>();
+
+    @Enumerated(value = EnumType.STRING)//by default EnumType.ORDINAL, But not recommended, the reason see in Difficulty.java
+    private Difficulty difficulty;
 
     public Long getId() {
         return id;
