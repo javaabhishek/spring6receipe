@@ -48,7 +48,5 @@ class IndexControllerUnitTest {
         verify(model,times(1)).addAttribute(eq("recipes"),argumentCaptor.capture());
         Set<Recipe> whatIsReturnByRecipeSerivce=argumentCaptor.getValue();
         assertEquals(2,whatIsReturnByRecipeSerivce.size());
-
-        System.out.println("Test to revert commit");
     }
 }
