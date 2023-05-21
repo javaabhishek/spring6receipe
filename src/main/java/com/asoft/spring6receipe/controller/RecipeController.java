@@ -1,11 +1,14 @@
 package com.asoft.spring6receipe.controller;
 
+import com.asoft.spring6receipe.dto.RecipeDto;
 import com.asoft.spring6receipe.model.Recipe;
 import com.asoft.spring6receipe.service.RecipeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
@@ -25,5 +28,18 @@ public class RecipeController {
         log.info("recipe:"+recipe.getDescription());
         model.addAttribute("recipe",recipe);
         return "recipe/show";
+    }
+
+    @RequestMapping("/new")
+    public String newRecipe(Model model){
+        model.addAttribute("recipe",new RecipeDto());
+        return "recipe/recipeform";
+    }
+
+    @PostMapping
+    @RequestMapping("/createupdate")
+    public String createOrUpdate(@ModelAttribute RecipeDto recipeDto){
+        RecipeDto savedRecipeDto=recipeService.saveRecipe(recipeDto);
+        return "redirect:/recipe/show/"+savedRecipeDto.getId();
     }
 }
