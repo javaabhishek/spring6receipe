@@ -1,5 +1,6 @@
 package com.asoft.spring6receipe.service;
 
+import com.asoft.spring6receipe.dto.RecipeDto;
 import com.asoft.spring6receipe.model.Recipe;
 
 import java.util.Optional;
@@ -9,4 +10,6 @@ public interface RecipeService {
     Set<Recipe> getAllRecipe();
 
     Optional<Recipe> findById(Long recipeId);
+
+    RecipeDto saveRecipe(RecipeDto recipeDto);
 }
