@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,10 +21,15 @@ class RecipeServiceImplUnitTest {
     @Mock
     RecipeRepository recipeRepository;
 
+    Recipe sampleRecipe;
+    Set<Recipe> recipeSet=new HashSet<>();
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         recipeService=new RecipeServiceImpl(recipeRepository);
+        sampleRecipe=new Recipe();
+        sampleRecipe.setId(1l);
+        recipeSet.add(sampleRecipe);
     }
 
     @AfterEach
@@ -32,12 +38,16 @@ class RecipeServiceImplUnitTest {
 
     @Test
     void getAllRecipe() {
-        Recipe recipe=new Recipe();
-        Set<Recipe> recipeSet=new HashSet<>();
-        recipeSet.add(recipe);
         when(recipeRepository.findAll()).thenReturn(recipeSet);//Imp
-       assertEquals(1,recipeService.getAllRecipe().size());
-       verify(recipeRepository,times(1)).findAll();// here we are confirming
+        assertEquals(1,recipeService.getAllRecipe().size());
+        verify(recipeRepository,times(1)).findAll();// here we are confirming
         //that mocked recipeRepository findAll method executed only once
+    }
+
+    @Test
+    void findById() {
+        when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(sampleRecipe));
+        Optional<Recipe> recipe= recipeService.findById(1l);
+        assertEquals(1l,recipe.get().getId());
     }
 }

@@ -37,7 +37,7 @@ public class RecipeBootStrap implements ApplicationListener<ContextRefreshedEven
         guacRecipe.setDescription("Perfect Guacamole");//description
         guacRecipe.setPrepTime(10);//prepTime
         guacRecipe.setCookTime(0);//cookTime
-        guacRecipe.setDifficulty(Difficulty.EASY);
+        guacRecipe.setDifficulty(Difficulty.HARD);
         guacRecipe.setDirections("1 Cut avocado, remove flesh: Cut the avocados in half. Remove seed. Score the inside of the avocado with a blunt knife and scoop out the flesh with a spoon" +
                 "\n" +
                 "2 Mash with a fork: Using a fork, roughly mash the avocado. (Don't overdo it! The guacamole should be a little chunky.)" +
@@ -65,10 +65,10 @@ public class RecipeBootStrap implements ApplicationListener<ContextRefreshedEven
         UnitOfMeasure eachUom=unitOfMeasureRepository.findByUom("Each").get();
         UnitOfMeasure teaspoonUom=unitOfMeasureRepository.findByUom("Teaspoon").get();
         guacRecipe.addIngredient(new Ingredient("ripe avocados", new BigDecimal(2), guacRecipe,eachUom));
-        guacRecipe.addIngredient(new Ingredient("ripe avocados", new BigDecimal(2), guacRecipe,teaspoonUom));
-        guacRecipe.addIngredient(new Ingredient("ripe avocados", new BigDecimal(2), guacRecipe,eachUom));
-        guacRecipe.addIngredient(new Ingredient("ripe avocados", new BigDecimal(2), guacRecipe,teaspoonUom));
-        guacRecipe.addIngredient(new Ingredient("ripe avocados", new BigDecimal(2), guacRecipe,eachUom));
+        guacRecipe.addIngredient(new Ingredient("Mango avocados", new BigDecimal(2), guacRecipe,teaspoonUom));
+        guacRecipe.addIngredient(new Ingredient("Salt", new BigDecimal(2), guacRecipe,eachUom));
+        guacRecipe.addIngredient(new Ingredient("Haldi", new BigDecimal(2), guacRecipe,teaspoonUom));
+        guacRecipe.addIngredient(new Ingredient("rice", new BigDecimal(2), guacRecipe,eachUom));
 
         Category american=categoryRepository.findByDescription("American").get();
         guacRecipe.getCategories().add(american);
@@ -80,6 +80,9 @@ public class RecipeBootStrap implements ApplicationListener<ContextRefreshedEven
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         recipeRepository.saveAll(loadData());
+        recipeRepository.findAll().forEach(e->{
+            log.info("Recipe ID:>>"+e.getId());
+        });
         log.info("Guac recipe is saved...");
     }
 }
