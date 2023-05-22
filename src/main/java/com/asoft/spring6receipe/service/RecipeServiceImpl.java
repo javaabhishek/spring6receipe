@@ -45,4 +45,14 @@ public class RecipeServiceImpl implements RecipeService{
         Recipe recipe= recipeRepository.save(detachedRecipe);
         return recipeToRecipeDto.convert(recipe);
     }
+
+    @Override
+    public RecipeDto findRecipeById(Long recipeId) {
+         return recipeToRecipeDto.convert(this.findById(recipeId).get());
+    }
+
+    @Override
+    public void deleteById(Long recipeId) {
+        recipeRepository.deleteById(recipeId);
+    }
 }

@@ -3,6 +3,7 @@ package com.asoft.spring6receipe.controller;
 import com.asoft.spring6receipe.dto.RecipeDto;
 import com.asoft.spring6receipe.model.Recipe;
 import com.asoft.spring6receipe.service.RecipeService;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,11 +31,25 @@ public class RecipeController {
         return "recipe/show";
     }
 
+    @RequestMapping("/update/{recipeId}")
+    public String update(@PathVariable Long recipeId,Model model){
+        RecipeDto recipeDto=recipeService.findRecipeById(recipeId);
+        model.addAttribute("recipe",recipeDto);
+        return "recipe/recipeform";
+    }
+
+    @RequestMapping("/delete/{recipeId}")
+    public String delete(@PathVariable Long recipeId){
+        recipeService.deleteById(recipeId);
+        return "redirect:/index";
+    }
+
     @RequestMapping("/new")
     public String newRecipe(Model model){
         model.addAttribute("recipe",new RecipeDto());
         return "recipe/recipeform";
     }
+
 
     @PostMapping
     @RequestMapping("/createupdate")
