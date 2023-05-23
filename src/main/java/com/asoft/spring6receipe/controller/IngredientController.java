@@ -48,6 +48,18 @@ public class IngredientController {
     }
 
     @GetMapping
+    @RequestMapping("/recipe/{recipeId}/ingredient/new")
+    public String newIngredient(@PathVariable Long recipeId,Model model){
+        RecipeDto recipeDto=recipeService.findRecipeById(recipeId);
+        IngredientDto ingredientDto=new IngredientDto();
+        ingredientDto.setRecipeId(recipeDto.getId());
+        Set<UnitOfMeasureDto> unitOfMeasureDtoSet=unitOfMeasureService.listAllUoms();
+        model.addAttribute("ingredient",ingredientDto);
+        model.addAttribute("uomList",unitOfMeasureDtoSet);
+        return "/recipe/ingredients/ingredientform";
+    }
+
+    @GetMapping
     @RequestMapping("/recipe/{recipeId}/ingredient/{ingredientId}/update")
     public String updateRecipeIngredient(@PathVariable Long recipeId,@PathVariable Long ingredientId,Model model){
         IngredientDto ingredientDto=ingredientService.findIngredientById(recipeId,ingredientId);
@@ -55,6 +67,13 @@ public class IngredientController {
         model.addAttribute("ingredient",ingredientDto);
         model.addAttribute("uomList",unitOfMeasureDtoSet);
         return "/recipe/ingredients/ingredientform";
+    }
+
+    @GetMapping
+    @RequestMapping("/recipe/{recipeId}/ingredient/{ingredientId}/delete")
+    public String deleteRecipeIngredient(@PathVariable Long recipeId,@PathVariable Long ingredientId){
+        RecipeDto recipeDto =ingredientService.deleteIngredient(recipeId,ingredientId);
+        return "redirect:/ingredient/recipe/"+recipeDto.getId()+"/ingredients";
     }
 
     @PostMapping

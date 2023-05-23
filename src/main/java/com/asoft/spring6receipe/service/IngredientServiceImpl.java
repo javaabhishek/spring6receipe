@@ -2,7 +2,9 @@ package com.asoft.spring6receipe.service;
 
 import com.asoft.spring6receipe.converter.IngredientDtoToIngredient;
 import com.asoft.spring6receipe.converter.IngredientToIngredientDto;
+import com.asoft.spring6receipe.converter.RecipeToRecipeDto;
 import com.asoft.spring6receipe.dto.IngredientDto;
+import com.asoft.spring6receipe.dto.RecipeDto;
 import com.asoft.spring6receipe.model.Ingredient;
 import com.asoft.spring6receipe.model.Recipe;
 import com.asoft.spring6receipe.repositories.RecipeRepository;
@@ -18,15 +20,19 @@ public class IngredientServiceImpl implements IngredientService{
 
     private final IngredientToIngredientDto ingredientToIngredientDto;
     private final IngredientDtoToIngredient ingredientDtoToIngredient;
+    private final RecipeToRecipeDto recipeToRecipeDto;
+
 
     public IngredientServiceImpl(RecipeRepository recipeRepository,
                                  UnitOfMeasureRepository unitOfMeasureRepository,
                                  IngredientToIngredientDto ingredientToIngredientDto,
-                                 IngredientDtoToIngredient ingredientDtoToIngredient) {
+                                 IngredientDtoToIngredient ingredientDtoToIngredient,
+                                 RecipeToRecipeDto recipeToRecipeDto) {
         this.recipeRepository = recipeRepository;
         this.unitOfMeasureRepository = unitOfMeasureRepository;
         this.ingredientToIngredientDto = ingredientToIngredientDto;
         this.ingredientDtoToIngredient = ingredientDtoToIngredient;
+        this.recipeToRecipeDto = recipeToRecipeDto;
     }
 
     @Override
@@ -57,13 +63,33 @@ public class IngredientServiceImpl implements IngredientService{
             ingredientFromDb.setUnitOfMeasure(unitOfMeasureRepository.findById(ingredient.getUnitOfMeasure()
                     .getId()).orElseThrow(()-> new RuntimeException("UOM not found")));
         }else{
-            recipe.addIngredient(ingredientDtoToIngredient.convert(ingredient));
+            Ingredient ingredientToDB=ingredientDtoToIngredient.convert(ingredient);
+            ingredientToDB.setRecipe(recipe);
+            recipe.addIngredient(ingredientToDB);
         }
 
         Recipe savedRecipe=recipeRepository.save(recipe);
 
+        Optional<Ingredient> savedIngredient=savedRecipe.getIngredients().stream().filter(ing->ing.getId()
+                .equals(ingredient.getId())).findFirst();
+        if(!savedIngredient.isPresent()){
+            savedIngredient=savedRecipe.getIngredients().stream()
+                    .filter(ing-> ing.getDescription().equals(ingredient.getDescription())
+                    && ing.getAmount().equals(ingredient.getAmount())
+                    && ing.getUnitOfMeasure().getId().equals(ingredient.getUnitOfMeasure().getId()))
+                    .findFirst();
+        }
         //below statement may fail in case of new ingredient add
-        return ingredientToIngredientDto.convert(savedRecipe.getIngredients().stream()
-                .filter(ing->ing.getId().equals(ingredient.getId())).findFirst().get());
+        return ingredientToIngredientDto.convert(savedIngredient.get());
+    }
+
+    @Override
+    public RecipeDto deleteIngredient(Long recipeId, Long ingredientId) {
+        Recipe recipe=recipeRepository.findById(recipeId).orElseThrow(()->new RuntimeException("Recipe not found"));
+        Ingredient ingredientToDelete= recipe.getIngredients().stream().filter(ing-> ing.getId().equals(ingredientId)).findFirst().get();
+        ingredientToDelete.setRecipe(null);
+        recipe.getIngredients().remove(ingredientToDelete);
+        Recipe savedRecipe=recipeRepository.save(recipe);
+        return recipeToRecipeDto.convert(savedRecipe);
     }
 }
