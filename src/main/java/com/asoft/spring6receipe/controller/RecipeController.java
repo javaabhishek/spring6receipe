@@ -7,10 +7,7 @@ import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Controller
@@ -23,7 +20,7 @@ public class RecipeController {
         this.recipeService = recipeService;
     }
 
-    @RequestMapping("/show/{recipeId}")
+    @GetMapping("/show/{recipeId}")
     public String showById(@PathVariable Long recipeId, Model model){
         Recipe recipe= recipeService.findById(recipeId).get();
         log.info("recipe:"+recipe.getDescription());
@@ -31,28 +28,27 @@ public class RecipeController {
         return "recipe/show";
     }
 
-    @RequestMapping("/update/{recipeId}")
+    @GetMapping("/update/{recipeId}")
     public String update(@PathVariable Long recipeId,Model model){
         RecipeDto recipeDto=recipeService.findRecipeById(recipeId);
         model.addAttribute("recipe",recipeDto);
         return "recipe/recipeform";
     }
 
-    @RequestMapping("/delete/{recipeId}")
+    @GetMapping("/delete/{recipeId}")
     public String delete(@PathVariable Long recipeId){
         recipeService.deleteById(recipeId);
         return "redirect:/index";
     }
 
-    @RequestMapping("/new")
+    @GetMapping("/new")
     public String newRecipe(Model model){
         model.addAttribute("recipe",new RecipeDto());
         return "recipe/recipeform";
     }
 
 
-    @PostMapping
-    @RequestMapping("/createupdate")
+    @PostMapping("/createupdate")
     public String createOrUpdate(@ModelAttribute RecipeDto recipeDto){
         RecipeDto savedRecipeDto=recipeService.saveRecipe(recipeDto);
         return "redirect:/recipe/show/"+savedRecipeDto.getId();
