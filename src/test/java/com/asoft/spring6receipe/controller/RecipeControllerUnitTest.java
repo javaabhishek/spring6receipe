@@ -55,11 +55,18 @@ class RecipeControllerUnitTest {
         verify(recipeService,times(1)).findById(anyLong());
 
     }
-
     @Test
     void testRecipeNotFound() throws Exception {
         when(recipeService.findById(anyLong())).thenThrow(NotFoundException.class);
         mockMvc.perform(MockMvcRequestBuilders.get("/recipe/show/{recipeId}",10))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testRecipeNotFoundView() throws Exception {
+        when(recipeService.findById(anyLong())).thenThrow(NotFoundException.class);
+        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/show/{recipeId}",10))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("404error"));
     }
 }
