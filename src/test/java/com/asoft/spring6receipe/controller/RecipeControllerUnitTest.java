@@ -1,5 +1,6 @@
 package com.asoft.spring6receipe.controller;
 
+import com.asoft.spring6receipe.exceptions.NotFoundException;
 import com.asoft.spring6receipe.model.Recipe;
 import com.asoft.spring6receipe.service.RecipeService;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,7 @@ class RecipeControllerUnitTest {
     }
     @Test
     void showById() throws Exception {
-        when(recipeService.findById(anyLong())).thenReturn(Optional.of(sampleRecipe));
+        when(recipeService.findById(anyLong())).thenReturn(sampleRecipe);
         MvcResult result=mockMvc.perform(MockMvcRequestBuilders.get("/recipe/show/1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("/recipe/show"))
@@ -53,5 +54,12 @@ class RecipeControllerUnitTest {
         assertEquals(1l,recipe_.getId());
         verify(recipeService,times(1)).findById(anyLong());
 
+    }
+
+    @Test
+    void testRecipeNotFound() throws Exception {
+        when(recipeService.findById(anyLong())).thenThrow(NotFoundException.class);
+        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/show/{recipeId}",10))
+                .andExpect(status().isNotFound());
     }
 }

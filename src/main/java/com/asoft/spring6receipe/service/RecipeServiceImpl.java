@@ -3,6 +3,7 @@ package com.asoft.spring6receipe.service;
 import com.asoft.spring6receipe.converter.RecipeDtoToRecipe;
 import com.asoft.spring6receipe.converter.RecipeToRecipeDto;
 import com.asoft.spring6receipe.dto.RecipeDto;
+import com.asoft.spring6receipe.exceptions.NotFoundException;
 import com.asoft.spring6receipe.model.Recipe;
 import com.asoft.spring6receipe.repositories.RecipeRepository;
 import org.springframework.stereotype.Service;
@@ -34,8 +35,8 @@ public class RecipeServiceImpl implements RecipeService{
     }
 
     @Override
-    public Optional<Recipe> findById(Long recipeId) {
-        return recipeRepository.findById(recipeId);
+    public Recipe findById(Long recipeId) {
+        return recipeRepository.findById(recipeId).orElseThrow(()->new NotFoundException("Recipe Not found"));
     }
 
     @Override
@@ -48,7 +49,7 @@ public class RecipeServiceImpl implements RecipeService{
 
     @Override
     public RecipeDto findRecipeById(Long recipeId) {
-         return recipeToRecipeDto.convert(this.findById(recipeId).get());
+         return recipeToRecipeDto.convert(this.findById(recipeId));
     }
 
     @Override

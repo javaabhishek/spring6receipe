@@ -3,9 +3,11 @@ package com.asoft.spring6receipe.service;
 import com.asoft.spring6receipe.converter.RecipeDtoToRecipe;
 import com.asoft.spring6receipe.converter.RecipeToRecipeDto;
 import com.asoft.spring6receipe.dto.RecipeDto;
+import com.asoft.spring6receipe.exceptions.NotFoundException;
 import com.asoft.spring6receipe.model.Recipe;
 import com.asoft.spring6receipe.repositories.RecipeRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -54,9 +56,9 @@ class RecipeServiceImplUnitTest {
 
     @Test
     void findById() {
-        when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(sampleRecipe));
-        Optional<Recipe> recipe= recipeService.findById(1l);
-        assertEquals(1l,recipe.get().getId());
+        when(recipeRepository.findById(anyLong())).thenReturn(Optional.ofNullable(sampleRecipe));
+        Recipe recipe= recipeService.findById(1l);
+        assertEquals(1l,recipe.getId());
     }
 
     @Test
@@ -72,5 +74,14 @@ class RecipeServiceImplUnitTest {
         verify(recipeRepository,times(1)).save(any());
         verify(recipeDtoToRecipe,times(1)).convert(any());
         verify(recipeToRecipeDto,times(1)).convert(any());
+    }
+    @Test
+    void test_recipeNotFound(){
+        Optional<Recipe> optionalEmptyRecipe=Optional.empty();
+        when(recipeRepository.findById(anyLong())).thenReturn(optionalEmptyRecipe);
+        NotFoundException notFoundException=Assertions.assertThrows(NotFoundException.class,()->{
+            recipeService.findById(1l);
+        });
+        assertEquals("Recipe Not found",notFoundException.getMessage());
     }
 }

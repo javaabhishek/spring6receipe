@@ -9,7 +9,7 @@ import java.util.Set;
 public interface RecipeService {
     Set<Recipe> getAllRecipe();
 
-    Optional<Recipe> findById(Long recipeId);
+    Recipe findById(Long recipeId);
 
     RecipeDto saveRecipe(RecipeDto recipeDto);
     RecipeDto findRecipeById(Long recipeId);
